@@ -88,7 +88,7 @@ Write-Host "================================" -ForegroundColor Cyan
 Write-Host "Deployment completed successfully!" -ForegroundColor Green
 Write-Host "================================" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "Application is running at: http://localhost:8080" -ForegroundColor Yellow
+Write-Host "Application is running at: http://localhost:3000" -ForegroundColor Yellow
 Write-Host ""
 Write-Host "Useful commands:"
 Write-Host "  View logs:      docker-compose logs -f"
