@@ -26,7 +26,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter basename="/Online_Voting_System">
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/results" element={<Results />} />
