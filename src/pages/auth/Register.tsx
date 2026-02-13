@@ -48,6 +48,10 @@ const Register = () => {
     setLoading(true);
 
     try {
+      // Build correct redirect URL for email confirmation
+      const basePath = import.meta.env.VITE_DEPLOY_TARGET === 'github-pages' ? '/Online_Voting_System' : '';
+      const redirectUrl = `${window.location.origin}${basePath}/`;
+      
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -55,7 +59,7 @@ const Register = () => {
           data: {
             full_name: fullName,
           },
-          emailRedirectTo: `${window.location.origin}/`,
+          emailRedirectTo: redirectUrl,
         },
       });
 

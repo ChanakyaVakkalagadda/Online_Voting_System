@@ -28,27 +28,50 @@ const ForgotPassword = () => {
     try {
       const normalizedEmail = email.toLowerCase().trim();
       
+      // Build correct redirect URL for different deployment environments
+      // For GitHub Pages: https://username.github.io/Online_Voting_System/auth/reset-password
+      // For local/Docker: http://localhost:5173/auth/reset-password
+      const basePath = import.meta.env.VITE_DEPLOY_TARGET === 'github-pages' ? '/Online_Voting_System' : '';
+      const redirectUrl = `${window.location.origin}${basePath}/auth/reset-password`;
+      
       // Try to send reset email
-      const { error } = await supabase.auth.resetPasswordForEmail(normalizedEmail, {
-        redirectTo: `${window.location.origin}/auth/reset-password`,
+      const { data, error } = await supabase.auth.resetPasswordForEmail(normalizedEmail, {
+        redirectTo: redirectUrl,
       });
 
       if (error) {
         console.error("Password reset error:", error);
         setShowEmailInfo(true);
-        toast.error("Unable to send reset email. Email service may not be configured. Please see instructions below.", {
-          duration: 6000,
-        });
+        
+        // Provide specific error messages
+        if (error.message.includes('Email rate limit exceeded')) {
+          toast.error("Too many reset attempts. Please try again in a few minutes.", {
+            duration: 6000,
+          });
+        } else if (error.message.includes('SMTP')) {
+          toast.error("Email service not configured. Please contact admin or see instructions below.", {
+            duration: 6000,
+          });
+        } else {
+          toast.error(`Unable to send reset email: ${error.message}`, {
+            duration: 6000,
+          });
+        }
       } else {
+        // Success - email sent
         toast.success("Password reset email has been sent! Please check your inbox and spam folder.", {
           duration: 8000,
         });
         setShowEmailInfo(true);
+        
+        if (import.meta.env.DEV) {
+          console.log("Reset email sent successfully to:", normalizedEmail);
+        }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Unexpected error:", error);
       setShowEmailInfo(true);
-      toast.error("An error occurred. Please see alternative options below.");
+      toast.error(error?.message || "An error occurred. Please see alternative options below.");
     } finally {
       setLoading(false);
     }
